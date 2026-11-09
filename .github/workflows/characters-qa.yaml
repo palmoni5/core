@@ -1,0 +1,33 @@
+﻿name: Characters QA
+on:
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: Exact candidate commit SHA
+        required: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: ['3.4.0', stable, dev]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.candidate }}
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+      - run: git rev-parse HEAD
+      - run: dart pub get
+        working-directory: pkgs/characters
+      - run: dart analyze --fatal-infos
+        working-directory: pkgs/characters
+      - run: dart format --output=none --set-exit-if-changed .
+        if: matrix.sdk == 'dev'
+        working-directory: pkgs/characters
+      - run: dart test --platform vm --reporter expanded
+        working-directory: pkgs/characters
+      - run: dart test --platform chrome --reporter expanded
+        working-directory: pkgs/characters
