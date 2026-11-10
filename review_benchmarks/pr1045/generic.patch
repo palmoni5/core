@@ -1,0 +1,53 @@
+diff --git a/pkgs/characters/lib/src/characters_impl.dart b/pkgs/characters/lib/src/characters_impl.dart
+index a901b517..b659a825 100644
+--- a/pkgs/characters/lib/src/characters_impl.dart
++++ b/pkgs/characters/lib/src/characters_impl.dart
+@@ -521,7 +521,9 @@ class StringCharacterRange implements CharacterRange {
+             category = high(surrogate, nextSurrogate);
+           }
+         }
+-        state = move(state, category);
++        state = category == categoryOther && (state & maskState) == stateOther
++            ? stateOther | flagBreak
++            : move(state, category);
+         if (state & maskBreak != flagNoBreak && --count == 0) {
+           _move(newStart, index);
+           return true;
+diff --git a/pkgs/characters/lib/src/grapheme_clusters/breaks.dart b/pkgs/characters/lib/src/grapheme_clusters/breaks.dart
+index a5448bcc..92e435a2 100644
+--- a/pkgs/characters/lib/src/grapheme_clusters/breaks.dart
++++ b/pkgs/characters/lib/src/grapheme_clusters/breaks.dart
+@@ -78,7 +78,10 @@ class Breaks {
+     var char = base.codeUnitAt(cursor++);
+     var surrogate = char ^ 0xD800;
+     if (surrogate > 0x3FF) {
+-      state = move(state, low(char));
++      var category = low(char);
++      state = category == categoryOther && (state & maskState) == stateOther
++          ? stateOther | flagBreak
++          : move(state, category);
+       return;
+     }
+     // The category of an unpaired lead surrogate is Control.
+@@ -215,7 +218,9 @@ class BackBreaks {
+     var surrogate = char ^ 0xDC00;
+     if (surrogate > 0x3FF) {
+       var category = low(char);
+-      state = moveBack(state, category);
++      state = category == categoryOther && (state & maskState) == stateOther
++          ? stateOther | flagBreak
++          : moveBack(state, category);
+       return;
+     }
+     // Found tail surrogate, check for prior lead surrogate.
+@@ -231,7 +236,9 @@ class BackBreaks {
+     } else {
+       category = categoryControl;
+     }
+-    state = moveBack(state, category);
++    state = category == categoryOther && (state & maskState) == stateOther
++        ? stateOther | flagBreak
++        : moveBack(state, category);
+   }
+ 
+   /// Steps back using lookahead states.

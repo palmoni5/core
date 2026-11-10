@@ -1,0 +1,7 @@
+worktrees/
+benchmark.exe
+benchmark
+benchmark.dart.aot
+.ready
+*.log
+__pycache__/
