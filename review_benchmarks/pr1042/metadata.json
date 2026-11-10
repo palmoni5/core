@@ -1,0 +1,16 @@
+{
+    "sdk":  "Dart SDK version: 3.13.5 (stable) (Tue Sep 29 01:00:52 2026 -0700) on \"windows_x64\"",
+    "protocol":  "31 paired samples per mode, randomized BP/PB order, \u003e=15ms baseline calibration, checksums checked before timing, one logical CPU (mask 16), three fresh AOT processes",
+    "prHead":  "a62023e5b99fe892bf91b0ed1ee7a5fb2b32145f",
+    "seeds":  [
+                  1042,
+                  2317,
+                  8129
+              ],
+    "affinityMask":  16,
+    "cpu":  {
+                "Name":  "Intel(R) Core(TM) i5-14500",
+                "NumberOfCores":  14,
+                "NumberOfLogicalProcessors":  20
+            }
+}

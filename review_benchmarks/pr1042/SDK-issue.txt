@@ -1,0 +1,64 @@
+Title: Investigate CodeUnits.getRange iteration overhead in VM AOT
+
+Following feedback on dart-lang/core#1042, I measured String.codeUnits.getRange versus an Iterable.generate view that captures the same immutable string and selected UTF-16 bounds.
+
+Both are already lazy O(1) views. This is not a whole-string allocation bug. I agree that any generally useful optimization belongs in the SDK rather than a package:characters workaround; I am reporting the measurements for SDK investigation, not prescribing an implementation.
+
+Environment: Dart 3.13.5 stable (2026-09-29), windows_x64, Intel Core i5-14500, AOT executable, affinity mask16 (one logical CPU). Three fresh AOT processes, 31 paired samples per case/process, randomized baseline/proposal execution order, baseline-calibrated >=15ms batches. Equal outputs and snapshot behavior checked before timing. No JIT, web/Wasm or cross-hardware timing claim.
+
+Results (median per operation; P/B is the paired time ratio; bootstrap intervals describe these samples only):
+
+* Two UTF-16 units in a 56-unit source, iterate: 74.1ns -> 48.0ns, P/B0.643, paired bootstrap95%0.639-0.651.
+* Two units in a 1,400,000-unit source, iterate: 80.7ns -> 53.4ns, P/B0.670, CI0.654-0.683.
+* 8192 selected units in the long source, iterate: 143.1us -> 88.9us, P/B0.616, CI0.610-0.620.
+* Two units in the short source, length only: 25.9ns -> 18.5ns; elementAt: 31.0ns -> 21.4ns.
+* All29 size/mode combinations (empty/small/large; length/isEmpty/elementAt/iterate/three iterations/snapshot after range mutation) favored the generated view in all three process medians. Full raw data and process dispersion are included below.
+
+Reproducible full benchmark, Windows AOT runner, raw CSVs, summary/bootstrap script, source hashes and metadata:
+https://github.com/palmoni5/core/tree/benchmarks/characters-review/review_benchmarks/pr1042
+
+The benchmark imports only dart:io and dart:math, with no package:characters dependency. It reproduces the getter bodies using two small mutable-range adapters and consumes them through the same abstract interface. Timings include getter creation plus the named consumer operation, not CharacterRange construction/navigation. Alternating range offsets prevent measuring a single fixed constant view. This is a microbenchmark; Otzaria currently has no direct consumer of this getter, and no application performance gain is claimed.
+
+Minimal illustrative comparison (the linked runner provides calibration, random order, CPU affinity, repeated independent processes and raw samples):
+
+```dart
+import 'dart:math';
+
+Iterable<int> baseline(String source, int start, int end) =>
+    source.codeUnits.getRange(start, end);
+
+Iterable<int> direct(String source, int start, int end) {
+  final length = end - start;
+  return Iterable<int>.generate(length, (i) => source.codeUnitAt(start + i));
+}
+
+@pragma('vm:never-inline')
+int consume(Iterable<int> Function(String, int, int) view, String source) {
+  var checksum = 0;
+  for (var i = 0; i < 1000000; i++) {
+    final start = source.length ~/ 2 + (i & 1);
+    for (final unit in view(source, start, start + 2)) {
+      checksum += unit;
+    }
+  }
+  return checksum;
+}
+
+void main() {
+  final source = List.filled(200000, 'אָב😀גד').join();
+  final random = Random(1042);
+  for (var round = 0; round < 12; round++) {
+    final views = [baseline, direct];
+    if (random.nextBool()) views.setAll(0, views.reversed.toList());
+    for (final view in views) {
+      final timer = Stopwatch()..start();
+      final checksum = consume(view, source);
+      timer.stop();
+      print('${view == baseline ? "baseline" : "direct"},'
+          '${timer.elapsedMicroseconds},$checksum');
+    }
+  }
+}
+```
+
+Source inspection in this SDK: VM, JS and Wasm string implementations return CodeUnits(this). CodeUnits.length forwards to String.length and operator[] calls codeUnitAt. ListBase.getRange validates bounds and creates SubListIterable, whose length/elementAt repeatedly consult the underlying iterable. The generated iterable instead keeps a fixed length and closure over string/start. This suggests investigating CodeUnits.getRange specialization or compiler optimization of this wrapper chain, while retaining all current getRange argument validation and behavior. It does not imply the same performance difference on JS/Wasm just because those backends share the source-level view implementation.

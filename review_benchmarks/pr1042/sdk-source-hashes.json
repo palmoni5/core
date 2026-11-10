@@ -1,0 +1,38 @@
+﻿[
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\internal\\internal.dart",
+        "Hash":  "1F365485F6EB9F45681AF25EE6A37AA591966FACA70EDA49EAFF0060C1CBB896"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\collection\\list.dart",
+        "Hash":  "5585E174F073F571AA28C13AB7797BCA5840810FE452BECCA043A071238F8B9B"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\internal\\iterable.dart",
+        "Hash":  "534CA0C3AF7DFE8B860176BC1B99B222923BDDD644AC30582E83117B29D370F8"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\core\\iterable.dart",
+        "Hash":  "1BD90966D09FE127B0EA73E6A686EE9D74C372B13DD2D2C3581716CB8FFEFAEE"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\_internal\\vm\\lib\\string_patch.dart",
+        "Hash":  "D0108F9C74D7A54C351EDCEFE8D91F98A617A4247DDF02983F87A9BFEF2FC620"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\_internal\\js_runtime\\lib\\js_string.dart",
+        "Hash":  "FCBB3FCBF1DC8319B86460F7B36D0AFE75AA677EA95D291976403CC9D3B89B93"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\_internal\\js_dev_runtime\\private\\js_string.dart",
+        "Hash":  "3406A017417B066941D343865BA8D6B8A15E3675E9D6008EDD435507B6D02EF5"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\_internal\\wasm\\js_common\\js_string.dart",
+        "Hash":  "EEC0C1BE67FABD4AB33CD501A5D09A9A4DEC36827F2B2F7826BC8955E9932395"
+    },
+    {
+        "Path":  "C:\\Users\\otzaria\\tools\\flutter\\bin\\cache\\dart-sdk\\lib\\_internal\\wasm\\standalone\\embedder_string.dart",
+        "Hash":  "C96A948A290F5D2C1FB0C676E87850F60ABF25D082CA974052B7B7E91EC12236"
+    }
+]
