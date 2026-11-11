@@ -23,4 +23,17 @@ Each scenario has one warm-up per variant followed by 11 rounds. Variant order c
 
 The BoolList scenarios cover a concrete list, a two-element bool set, a mapped list with inexpensive length, and a replayable `sync*` iterable. They use the default fixed-length constructor. The reviewed implementation accumulates a word before writing it to storage and allocates the final list directly for short input. The QueueList scenarios compare creation alone with creation immediately followed by an append, at and around powers of two. Capacity follows directly from the ring-size calculation. At lengths such as 7, 15, and 31, the proposal halves the initial backing table and the first append triggers a grow-and-copy.
 
-For correctness, the four BoolList suites on the integrated `86ac482dc0e3ff5a00a40afae1999826cee5f522` commit passed 24 tests each on the VM, Chrome Dart2Js, and Chrome Dart2Wasm. That commit also includes the empty-fill and shrink changes. Their interaction is covered by these suites, while the microbenchmark isolates the constructor change.
+Selected candidate/baseline time ratios from the 2,992 observations in `data/`:
+
+| Scenario | Run 1 | Run 2 |
+| --- | ---: | ---: |
+| Original BoolList, 64 mapped elements | 1.329 | 1.243 |
+| Reviewed BoolList, 64 mapped elements | 0.718 | 0.762 |
+| Reviewed BoolList, 64 `sync*` elements | 0.523 | 0.517 |
+| Reviewed BoolList, concrete list of 2 | 1.005 | 1.086 |
+| QueueList proposal, create 31 elements | 0.782 | 0.905 |
+| QueueList proposal, create 31 then append | 1.959 | 1.790 |
+
+The reviewed BoolList improved the mapped-list and `sync*` cases in both processes. Concrete-list results varied by length and process. For example, 33 elements took 1.210 times the baseline time in run 1 and 0.965 times in run 2. The QueueList append case at capacity boundaries (7, 15, 31, 63, 1023) was 1.66–2.09 times the baseline time across both processes.
+
+For correctness, the four BoolList suites on the integrated `86ac482dc0e3ff5a00a40afae1999826cee5f522` commit passed 24 tests each on the VM, Chrome Dart2Js, and Chrome Dart2Wasm. The included `integrated_smoke_test.dart` also passed on all three targets. It constructs a growable packed list from a mapped iterable, performs an empty fill, then shrinks and regrows the same list at nine lengths. Copy it to the collection package's `test/` directory to run it with `dart test -p vm,chrome test/integrated_smoke_test.dart` and `dart test -p chrome --compiler dart2wasm test/integrated_smoke_test.dart`.
