@@ -1,6 +1,7 @@
 ## 1.20.0-wip
 
 - Fix `UnionSet.lookup` for non-null keys after component sets containing `null`.
+- Fix `CombinedMapView` lookup precedence when earlier maps contain `null` values.
 - Adds `separated` and `separatedList` extension methods to `Iterable`.
 - Adds `separate` extension method to `List`
 - Add `IterableMapEntryExtension` for working on `Map` as a list of pairs, using
