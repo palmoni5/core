@@ -152,8 +152,9 @@ void main(List<String> args) {
       if (length == 0 && mode == 'elementAt') continue;
       final checkBefore = work(before, mode, 37, start, length);
       final checkAfter = work(after, mode, 37, start, length);
-      if (checkBefore != checkAfter)
+      if (checkBefore != checkAfter) {
         throw StateError('checksum mismatch $name/$mode');
+      }
       var count = 32;
       while (count < 16777216) {
         final elapsed = timed(before, mode, count, start, length);
