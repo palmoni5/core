@@ -1,0 +1,22 @@
+diff --git a/pkgs/collection/lib/src/boollist.dart b/pkgs/collection/lib/src/boollist.dart
+index dc6bef92..0460e32e 100644
+--- a/pkgs/collection/lib/src/boollist.dart
++++ b/pkgs/collection/lib/src/boollist.dart
+@@ -226,9 +226,15 @@ final class _GrowableBoolList extends BoolList {
+       _data = Uint32List(newDataLength)..setRange(0, newDataLength, _data);
+     }
+ 
+-    for (var i = length; i < _data.length * BoolList._bitsPerEntry; i++) {
+-      _setBit(i, false);
++    // Clear the trailing bits in the partially used word, then clear entire
++    // words with a typed-data fill instead of visiting each bit individually.
++    var firstUnusedWord = length >> BoolList._entryShift;
++    var usedBits = length & BoolList._entrySignBitIndex;
++    if (usedBits != 0) {
++      _data[firstUnusedWord] &= (1 << usedBits) - 1;
++      firstUnusedWord++;
+     }
++    _data.fillRange(firstUnusedWord, _data.length, 0);
+ 
+     _length = length;
+   }

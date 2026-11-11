@@ -1,0 +1,30 @@
+diff --git a/pkgs/collection/lib/src/equality.dart b/pkgs/collection/lib/src/equality.dart
+index 88d1987a..f34d7cec 100644
+--- a/pkgs/collection/lib/src/equality.dart
++++ b/pkgs/collection/lib/src/equality.dart
+@@ -187,7 +187,8 @@ class ListEquality<E> implements Equality<List<E>> {
+     // This code is almost identical to the one in IterableEquality, except
+     // that it uses indexing instead of iterating to get the elements.
+     var hash = 0;
+-    for (var i = 0; i < list.length; i++) {
++    var length = list.length;
++    for (var i = 0; i < length; i++) {
+       var c = _elementEquality.hash(list[i]);
+       hash = (hash + c) & _hashMask;
+       hash = (hash + (hash << 10)) & _hashMask;
+diff --git a/pkgs/collection/lib/src/list_extensions.dart b/pkgs/collection/lib/src/list_extensions.dart
+index 85b5a28f..65218cc9 100644
+--- a/pkgs/collection/lib/src/list_extensions.dart
++++ b/pkgs/collection/lib/src/list_extensions.dart
+@@ -296,8 +296,9 @@ extension ListExtensions<E> on List<E> {
+   /// at the same indices are equal according to [equality],
+   /// which defaults to using `==`.
+   bool equals(List<E> other, [Equality<E> equality = const DefaultEquality()]) {
+-    if (length != other.length) return false;
+-    for (var i = 0; i < length; i++) {
++    var listLength = length;
++    if (listLength != other.length) return false;
++    for (var i = 0; i < listLength; i++) {
+       if (!equality.equals(this[i], other[i])) return false;
+     }
+     return true;

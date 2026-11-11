@@ -1,0 +1,41 @@
+{
+  "base_commit": "7f11cda89f00a7b04ce6d1e840138034005891c7",
+  "base_blobs": {
+    "boollist.dart": "dc6bef929c823ed8a6ffa70663d3c91232c7060f",
+    "queue_list.dart": "f92dbd22aa2c3e58b0f4f3d50f950e6f9314dcea"
+  },
+  "variants": {
+    "boollist-original": {
+      "commit": "a996328297e76f1e3bc00f570cdd715f6c450852",
+      "blob": "e8fc744f22440e0e4a250018b982c693b66b1a06"
+    },
+    "boollist-reviewed": {
+      "commit": "5831c688fb080fffa7e5c9f9f6860101549e4aec",
+      "blob": "d8df395fd25f2101d6b58397b66bb65ff0b577a0"
+    },
+    "queue-proposed": {
+      "commit": "107a63f520036d16e4d148cf2e86a96821d1ebfc",
+      "blob": "11caf46667b12fbb10da70e974220c0f13700e50"
+    }
+  },
+  "dart": "Dart SDK version: 3.13.5 (stable) (Tue Sep 29 01:00:52 2026 -0700) on \"windows_x64\"",
+  "machine": "AMD64",
+  "os": "Windows",
+  "cpu": "Intel Core i5-14500",
+  "affinity": "Unpinned; ordinary local desktop load",
+  "rounds_per_case": 11,
+  "runs": [
+    {
+      "csv": "run1.csv",
+      "seed": 33,
+      "rows": 1496,
+      "checksum": 4115169228
+    },
+    {
+      "csv": "run2.csv",
+      "seed": 57,
+      "rows": 1496,
+      "checksum": 3524749032
+    }
+  ]
+}
