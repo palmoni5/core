@@ -1,0 +1,38 @@
+name: Collection QA
+on:
+  workflow_dispatch:
+    inputs:
+      candidates:
+        description: JSON matrix of PR numbers, candidate commits and Dart SDKs
+        required: true
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    name: ${{ matrix.name }} on Dart ${{ matrix.sdk }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(inputs.candidates) }}
+    defaults:
+      run:
+        working-directory: pkgs/collection
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ matrix.commit }}
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d
+        with:
+          sdk: ${{ matrix.sdk }}
+      - run: git rev-parse HEAD
+      - run: dart pub get
+      - run: dart analyze --fatal-infos
+      - run: dart format --output=none --set-exit-if-changed .
+        if: matrix.sdk == 'dev'
+      - run: dart test --platform vm --test-randomize-ordering-seed=random
+      - run: dart test --platform chrome --test-randomize-ordering-seed=random
+        if: matrix.browser
+      - run: dart test --platform chrome --compiler dart2wasm
+        if: matrix.browser
