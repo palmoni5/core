@@ -12,6 +12,23 @@ Iterable iterError(Iterable base, int errorValue) {
 }
 
 void main() {
+  for (var emptyIndex = 0; emptyIndex < 3; emptyIndex++) {
+    test('empty child $emptyIndex leaves the zip exhausted', () {
+      final inputs = <List<int>>[
+        [1, 2],
+        [3, 4],
+        [5, 6]
+      ];
+      inputs[emptyIndex] = [];
+      final iterator = IterableZip<int>(inputs).iterator;
+
+      expect(iterator.moveNext(), isFalse);
+      inputs[emptyIndex].add(7);
+      expect(iterator.moveNext(), isFalse);
+      expect(() => iterator.current, throwsStateError);
+    });
+  }
+
   test('a terminated zip stops advancing longer input iterators', () {
     var visited = 0;
     Iterable<int> source() sync* {

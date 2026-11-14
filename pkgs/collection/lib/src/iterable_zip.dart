@@ -28,23 +28,18 @@ class IterableZip<T> extends IterableBase<List<T>> {
 }
 
 class _IteratorZip<T> implements Iterator<List<T>> {
-  final List<Iterator<T>> _iterators;
+  List<Iterator<T>> _iterators;
   List<T>? _current;
-  bool _finished = false;
 
   _IteratorZip(List<Iterator<T>> iterators) : _iterators = iterators;
 
   @override
   bool moveNext() {
-    if (_finished) return false;
-    if (_iterators.isEmpty) {
-      _finished = true;
-      return false;
-    }
+    if (_iterators.isEmpty) return false;
     for (var i = 0; i < _iterators.length; i++) {
       if (!_iterators[i].moveNext()) {
         _current = null;
-        _finished = true;
+        _iterators = const <Never>[];
         return false;
       }
     }
